@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ClassBook.Shared\ClassBook.Shared.csproj" />
+    <ProjectReference Include="..\ClassBook.Modules.Families\ClassBook.Modules.Families.csproj" />
+    <ProjectReference Include="..\ClassBook.Modules.Enrollments\ClassBook.Modules.Enrollments.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ClassBook.Api/ClassBook.Api.csproj" />
+    <Project Path="src/ClassBook.Shared/ClassBook.Shared.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/">
+    <Project Path="src/Modules/ClassBook.Modules.Courses/ClassBook.Modules.Courses.csproj" />
+    <Project Path="src/Modules/ClassBook.Modules.Enrollments/ClassBook.Modules.Enrollments.csproj" />
+    <Project Path="src/Modules/ClassBook.Modules.Families/ClassBook.Modules.Families.csproj" />
+    <Project Path="src/Modules/ClassBook.Modules.Identity/ClassBook.Modules.Identity.csproj" />
+    <Project Path="src/Modules/ClassBook.Modules.Payments/ClassBook.Modules.Payments.csproj" />
+  </Folder>
+</Solution>

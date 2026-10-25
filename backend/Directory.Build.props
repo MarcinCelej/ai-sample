@@ -1,0 +1,25 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- Required for IDE0005 (unnecessary usings) to be reported at build time. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <!-- A module may only use the modules it references directly, never their dependencies. -->
+  <PropertyGroup Condition="$(MSBuildProjectName.StartsWith('ClassBook.Modules.'))">
+    <DisableTransitiveProjectReferences>true</DisableTransitiveProjectReferences>
+  </PropertyGroup>
+
+  <ItemGroup Condition="!$(MSBuildProjectName.EndsWith('Tests'))">
+    <InternalsVisibleTo Include="ClassBook.UnitTests" />
+    <InternalsVisibleTo Include="ClassBook.IntegrationTests" />
+    <InternalsVisibleTo Include="ClassBook.ArchitectureTests" />
+  </ItemGroup>
+</Project>

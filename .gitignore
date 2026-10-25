@@ -1,0 +1,25 @@
+# .NET
+bin/
+obj/
+TestResults/
+*.user
+.vs/
+
+# Built SPA copied into the API host at publish
+backend/src/ClassBook.Api/wwwroot/
+
+# Node / frontend
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+blob-report/
+*.tsbuildinfo
+
+# Editors and OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
