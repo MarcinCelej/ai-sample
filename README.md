@@ -31,14 +31,14 @@ The UI is in Polish and built with internationalization in mind. The architectur
 - [.NET SDK 10](https://dotnet.microsoft.com/download)
 - [Node.js 24](https://nodejs.org/) (see `frontend/.nvmrc`)
 - A SQL Server 2022 instance you can connect to, e.g. a local container
-- Docker, only for the backend integration tests (they start their own SQL Server)
+- Docker or Podman, only for the backend integration tests (they start their own SQL Server, ~2 GB RAM). Use `127.0.0.1` rather than `localhost` in the connection string: with Podman on Windows, `localhost` resolves to IPv6 and times out.
 
 ### Backend
 
 ```bash
 cd backend
 dotnet tool restore
-dotnet user-secrets set ConnectionStrings:ClassBook "Server=localhost;Database=ClassBook;User Id=...;Password=...;TrustServerCertificate=true" --project src/ClassBook.Api
+dotnet user-secrets set ConnectionStrings:ClassBook "Server=127.0.0.1,1433;Database=ClassBook;User Id=...;Password=...;TrustServerCertificate=true" --project src/ClassBook.Api
 dotnet run --project src/ClassBook.Api
 ```
 

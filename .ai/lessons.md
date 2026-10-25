@@ -11,6 +11,7 @@ Read this file before starting any task. Add a new entry after fixing a bug, fin
 
 ## Entries
 
+- 2026-10-25 [local-containers-and-sql-host](lessons/2026-10-25-local-containers-and-sql-host.md) – Testcontainers uses Podman too: don't run integration tests locally unless asked, clean up leftovers; use `127.0.0.1` for local SQL Server
 - 2026-10-25 [shadcn-cli-defaults](lessons/2026-10-25-shadcn-cli-defaults.md) – init with `--base radix`; after every `shadcn add`, repoint `cn` to `@/lib/utils` and uninstall the `cn` package
 - 2026-10-25 [frontend-tooling-versions](lessons/2026-10-25-frontend-tooling-versions.md) – stay on ESLint 9 (jsx-a11y), pin majors named in the spec, MSW 3 and TS 6 API changes
 - 2026-10-25 [culture-dependent-output](lessons/2026-10-25-culture-dependent-output.md) – server text uses the invariant culture; a Polish OS exposed `Money.ToString()` and FluentValidation messages

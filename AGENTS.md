@@ -36,11 +36,11 @@ Run backend commands from `backend/` and frontend commands from `frontend/`.
 | Task | Command |
 |---|---|
 | Restore tools (once) | `dotnet tool restore` |
-| Dev database connection (once) | `dotnet user-secrets set ConnectionStrings:ClassBook "<connection string>" --project src/ClassBook.Api` |
+| Dev database connection (once) | `dotnet user-secrets set ConnectionStrings:ClassBook "Server=127.0.0.1,1433;Database=ClassBook;User Id=...;Password=...;TrustServerCertificate=True" --project src/ClassBook.Api` (use `127.0.0.1`, not `localhost`) |
 | Build (also regenerates `openapi/v1.json`) | `dotnet build` |
 | Run the API (https://localhost:7108, migrates in Development) | `dotnet run --project src/ClassBook.Api` |
 | Backend unit + architecture tests | `dotnet test --project tests/ClassBook.UnitTests` and `dotnet test --project tests/ClassBook.ArchitectureTests` |
-| Backend integration tests (need Docker) | `dotnet test --project tests/ClassBook.IntegrationTests` |
+| Backend integration tests (start a ~2 GB SQL Server container – run locally only when the human asks; CI runs them) | `dotnet test --project tests/ClassBook.IntegrationTests` |
 | Backend tests with coverage (Cobertura in `TestResults/`) | `dotnet test --coverlet --coverlet-output-format cobertura --coverlet-exclude-by-file "**/Migrations/*.cs"` |
 | Format check | `dotnet format --verify-no-changes` |
 | Add a migration | `dotnet ef migrations add <Name> --project src/Modules/ClassBook.Modules.<Module> --startup-project src/ClassBook.Api --context <Module>DbContext --output-dir Persistence/Migrations` |
