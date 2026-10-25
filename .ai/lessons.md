@@ -11,4 +11,8 @@ Read this file before starting any task. Add a new entry after fixing a bug, fin
 
 ## Entries
 
-_No lessons recorded yet._
+- 2026-10-25 [shadcn-cli-defaults](lessons/2026-10-25-shadcn-cli-defaults.md) – init with `--base radix`; after every `shadcn add`, repoint `cn` to `@/lib/utils` and uninstall the `cn` package
+- 2026-10-25 [frontend-tooling-versions](lessons/2026-10-25-frontend-tooling-versions.md) – stay on ESLint 9 (jsx-a11y), pin majors named in the spec, MSW 3 and TS 6 API changes
+- 2026-10-25 [culture-dependent-output](lessons/2026-10-25-culture-dependent-output.md) – server text uses the invariant culture; a Polish OS exposed `Money.ToString()` and FluentValidation messages
+- 2026-10-25 [openapi-schema-names-and-numbers](lessons/2026-10-25-openapi-schema-names-and-numbers.md) – prefix nested slice types in schema ids and keep JSON numbers strict; read the `v1.json` diff
+- 2026-10-25 [xunit-v3-mtp-coverage](lessons/2026-10-25-xunit-v3-mtp-coverage.md) – xUnit v3 4.x needs MTP (`global.json`) and `coverlet.MTP`; integration tests hang without Docker
