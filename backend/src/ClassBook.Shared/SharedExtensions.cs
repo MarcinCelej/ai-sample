@@ -1,9 +1,11 @@
+using System.Globalization;
 using System.Text.Json.Serialization;
 using ClassBook.Shared.Errors;
 using ClassBook.Shared.Persistence;
 using ClassBook.Shared.Security;
 using ClassBook.Shared.Tenancy;
 using ClassBook.Shared.Time;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,9 +17,17 @@ public static class SharedExtensions
     /// <summary>Registers the cross-cutting building blocks every module relies on.</summary>
     public static IServiceCollection AddClassBookShared(this IServiceCollection services)
     {
+        // API messages are English for developers; users see texts translated from error codes.
+        ValidatorOptions.Global.LanguageManager.Culture = CultureInfo.InvariantCulture;
+
         services.AddProblemDetails();
         services.AddExceptionHandler<GlobalExceptionHandler>();
-        services.ConfigureHttpJsonOptions(o => o.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+        services.ConfigureHttpJsonOptions(o =>
+        {
+            o.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            // Numbers are numbers: no reading from strings, which also keeps OpenAPI types exact.
+            o.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
+        });
 
         services.AddOptions<TenancyOptions>()
             .BindConfiguration(TenancyOptions.SectionName)
