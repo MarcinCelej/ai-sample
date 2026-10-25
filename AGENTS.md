@@ -22,6 +22,14 @@ ClassBook (working name) lets an organization publish courses and classes and le
    - Pull request: title starts with `[#12]`, body contains `Closes #12`. PRs are merged with a merge commit (no squash, no rebase), so every commit stays in history.
 5. **Meaningful commits.** Each commit is one logical step with a clear subject and a body explaining what and why. Before opening or updating a PR, clean up the branch history (squash "wip", "fix lint", "try again" commits into the step they belong to). Rewriting history is allowed only on your own feature branch, never on `main`.
 
+## Working method
+
+1. **Plan complex tasks first.** For anything non-trivial (multiple files, new behavior, unclear approach), plan before editing – use plan mode where available – and base the plan on the spec. If the work goes sideways, stop and re-plan instead of pushing through.
+2. **Verify every change.** Never report work as done without evidence: build, run the relevant tests, and exercise the changed behavior. Add or update tests with the change. Report failures and skipped checks plainly.
+3. **Challenge your own work.** Before handing off, review the diff critically. If a fix feels like a workaround, discard it and implement the proper solution.
+4. **Fix bugs from the evidence.** Start from the bug report, failing test or CI log; reproduce it with a failing test first, then fix the root cause.
+5. **Keep the main context clean.** Delegate research, exploration and independent subtasks to subagents. Parallel sessions must each use their own git worktree and feature branch.
+
 ## The `.ai` folder
 
 All agent-related working material lives in `.ai/`:
@@ -58,6 +66,7 @@ File names are `YYYY-MM-DD-slug.md` (date of creation, lowercase kebab-case slug
 
 - **Before starting work, read `.ai/lessons.md`** and any linked lessons relevant to the task.
 - After fixing a bug, hitting a pitfall, or finding an improvement (code, process, tooling, docs), record it: add a note in `.ai/lessons/YYYY-MM-DD-slug.md` and a one-line entry in `.ai/lessons.md`. See that file for the format.
+- **After every correction from the human** (review comment, rejected approach, "don't do X"), record a lesson that prevents the same mistake. If it is a durable project rule, also add it to this file.
 - Keep lessons concrete and actionable. Update or remove lessons that turn out to be wrong.
 
 ## Enforcement checklist
@@ -66,6 +75,7 @@ Before finishing any task, confirm:
 
 - [ ] A spec exists in `.ai/specs/` for the work (or the change is trivial) and is moved to `implemented/` if complete.
 - [ ] An autonomous run has a log in `.ai/runs/`.
+- [ ] Complex work was planned first, and the change is verified (build and tests run, results reported).
 - [ ] New lessons are recorded in `.ai/lessons/` and indexed in `.ai/lessons.md`.
 - [ ] All content is in English and file names follow `YYYY-MM-DD-slug.md`.
 - [ ] Work is on a feature branch, and nothing was committed, pushed or merged without explicit approval.
