@@ -1,0 +1,10 @@
+# Generated code
+src/api/generated
+src/components/ui
+package-lock.json
+
+# Build and test output
+dist
+coverage
+playwright-report
+test-results
