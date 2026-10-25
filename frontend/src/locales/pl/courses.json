@@ -1,0 +1,18 @@
+{
+  "list": {
+    "title": "Kursy",
+    "loading": "Wczytywanie kursów…",
+    "emptyState": "Nie ma jeszcze żadnych kursów.",
+    "loadError": "Nie udało się wczytać kursów.",
+    "total_one": "{{count}} kurs",
+    "total_few": "{{count}} kursy",
+    "total_many": "{{count}} kursów",
+    "total_other": "{{count}} kursu",
+    "columns": {
+      "name": "Nazwa",
+      "description": "Opis",
+      "capacity": "Liczba miejsc",
+      "monthlyFee": "Opłata miesięczna"
+    }
+  }
+}

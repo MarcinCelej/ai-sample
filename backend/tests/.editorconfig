@@ -1,0 +1,7 @@
+[*.cs]
+# Test method names use Method_Scenario_ExpectedResult.
+dotnet_diagnostic.CA1707.severity = none
+# xUnit test classes must be public.
+dotnet_diagnostic.CA1515.severity = none
+# Test code awaits on the default context.
+dotnet_diagnostic.CA2007.severity = none

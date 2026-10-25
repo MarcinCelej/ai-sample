@@ -80,7 +80,9 @@ ClassBook.Shared/
 ├── Tenancy/                         ITenantContext, ITenantOwned
 ├── Errors/                          Result, Error, ProblemDetails mapping
 ├── Validation/                      Validation endpoint filter
-├── Security/                        Policies, current user
+├── Paging/                          PagedResponse<T>, paging rules and query helper
+├── Domain/                          Money
+├── Security/                        Policies, roles, current user, CSRF middleware
 ├── Email/                           Outbox dispatcher + sender
 └── Time/                            Clock helpers (Europe/Warsaw)
 
@@ -96,7 +98,8 @@ ClassBook.Modules.Courses/
 
 ### Module rules
 
-- **Visibility:** only `<X>Module.cs` and the types in `Public/` are `public`. Everything else in a module is `internal`. Test projects get access through `InternalsVisibleTo`, configured once in `Directory.Build.props`.
+- **Visibility:** only `<X>Module.cs` and the types in `Public/` are `public`. Everything else in a module is `internal`, except the migrations EF Core generates as `public` in `Persistence/Migrations`. Test projects get access through `InternalsVisibleTo`, configured once in `Directory.Build.props`.
+- Module projects set `DisableTransitiveProjectReferences`, so a module can use only the modules it references directly.
 - Allowed dependencies form an acyclic graph, expressed as project references. A module references only the modules it depends on and uses only their `Public/` types.
 
   | Module      | May depend on              |
@@ -141,13 +144,13 @@ frontend/
 │   ├── components/
 │   │   ├── ui/              shadcn/ui components (generated, minimal edits)
 │   │   └── common/          Shared app components (PageHeader, MoneyText, …)
-│   ├── lib/                 Utilities (format.ts, cn.ts, problem-details.ts)
+│   ├── lib/                 Utilities (format.ts, utils.ts with cn(), problem-details.ts, i18n.ts)
 │   └── locales/pl/          Translation JSON per namespace
 └── e2e/                     Playwright tests
 ```
 
 - A feature may import from `components/`, `lib/` and `api/`, and from its own folder.
-- A feature must not import from another feature's folder. If two features need the same thing, move it to `components/common` or `lib`. ESLint enforces this with `import/no-restricted-paths` or a boundaries rule.
+- A feature must not import from another feature's folder. If two features need the same thing, move it to `components/common` or `lib`. ESLint enforces this with `no-restricted-imports` patterns per feature folder.
 
 ---
 
@@ -310,7 +313,9 @@ public static class CoursesModule
 
 ### EF Core
 
-- There is one `DbContext` per module: `CoursesDbContext`, `FamiliesDbContext`, `EnrollmentsDbContext`, `PaymentsDbContext`, and `IdentityDbContext`, which derives from the ASP.NET Core Identity context. Each is `internal` and lives in the module's `Persistence/` folder. It derives from `ModuleDbContext` in `ClassBook.Shared`, which applies tenant filters and interceptors, sets the default schema, and applies the configurations from its own assembly.
+- There is one `DbContext` per module: `CoursesDbContext`, `FamiliesDbContext`, `EnrollmentsDbContext`, `PaymentsDbContext`, and `IdentityDbContext`. Each is `internal`, lives in the module's `Persistence/` folder and implements `IModuleDbContext` (its schema). All but Identity derive from `ModuleDbContext` in `ClassBook.Shared`, which applies tenant filters, sets the default schema, and applies the configurations from its own assembly.
+- `IdentityDbContext` derives from the ASP.NET Core Identity context instead, because C# allows one base class and Identity tables are not tenant-owned. It sets the `identity` schema itself and has no tenant filter.
+- Every context is registered with `AddModuleDbContext<T>()`, which sets the connection string, the interceptors and the schema-scoped migrations history table.
 - All contexts use the same database and connection string, each in its own schema.
 - Every entity has an `IEntityTypeConfiguration<T>` in its module's `Persistence/` folder.
 - Configure everything explicitly in configuration classes, not with data annotations on entities: table and schema, max lengths on every string, precision on every decimal, indexes, relationships.
@@ -325,7 +330,8 @@ public static class CoursesModule
 ### Migrations workflow
 
 - Migrations are per module, in `Persistence/Migrations` of the module project. Each context keeps its own history table in its schema, e.g. `courses.__EFMigrationsHistory`. Create them from `backend/`:
-  `dotnet ef migrations add <PascalCaseName> --project src/Modules/ClassBook.Modules.Courses --startup-project src/ClassBook.Api --context CoursesDbContext`
+  `dotnet ef migrations add <PascalCaseName> --project src/Modules/ClassBook.Modules.Courses --startup-project src/ClassBook.Api --context CoursesDbContext --output-dir Persistence/Migrations`
+  Design-time tools need no connection string (`EF.IsDesignTime`); at runtime a missing one fails with a clear message.
 - Every migration is reviewed in the PR, including the generated SQL (`dotnet ef migrations script`). Data loss, such as dropping or renaming columns, must be called out in the PR description.
 - Never edit a migration that has been merged to `main`. Add a new one.
 - **Development:** the API applies the migrations of all module contexts at startup in the `Development` environment only.
@@ -426,6 +432,8 @@ public readonly record struct Money
   **Rationale:** FluentValidation supports async and cross-field rules and stays Apache-licensed. .NET 10's built-in `AddValidation()` covers only attribute rules.
 - **Business rules** such as "course full" or "already enrolled" are checked in the domain or handler and returned as `Result` errors, not as validator rules.
 - Every validation failure carries a stable error code, e.g. `WithErrorCode("course.capacity.min")`, so the frontend can translate it.
+- The `400` body is `ValidationProblemDetails` with `code: "validation.failed"`. `errors` holds the English messages and the extension `errorCodes` holds the codes, both keyed by camelCase field name (`address.postalCode`).
+- FluentValidation messages are always English, independent of the server culture.
 
 ### Errors – ProblemDetails (RFC 9457)
 
@@ -519,7 +527,10 @@ export default defineConfig({
       client: 'react-query',
       httpClient: 'fetch',
       mode: 'tags-split',
-      override: { mutator: { path: 'src/api/http.ts', name: 'http' } },
+      override: {
+        mutator: { path: 'src/api/http.ts', name: 'http' },
+        fetch: { includeHttpResponseReturnType: false }, // hooks return the body; non-2xx throws ApiError
+      },
     },
   },
 });
@@ -659,7 +670,7 @@ public static class Policies
 
 - 100% line coverage of new and changed lines, enforced in CI as diff coverage against the PR base. Branch coverage is reported and reviewed, but not gated, because `diff-cover` measures lines only.
 - Tools:
-  - Backend: Coverlet (`coverlet.collector`, Cobertura output).
+  - Backend: Coverlet (`coverlet.MTP`, Cobertura output). xUnit v3 runs on Microsoft.Testing.Platform, enabled in `backend/global.json`; the VSTest-only `coverlet.collector` does not work with it.
   - Frontend: Vitest with `@vitest/coverage-v8` (Cobertura output).
   - Diff coverage: `diff-cover --fail-under=100` over both reports.
 - Backend coverage combines unit and integration tests.
@@ -706,7 +717,7 @@ A change is done when all of the following hold:
 | Validation | FluentValidation |
 | Observability | OpenTelemetry (.NET) |
 | Email | `System.Net.Mail` / MailKit, depending on provider (deferred) |
-| Tests | xUnit v3, Shouldly, NSubstitute, Testcontainers.MsSql, Respawn, `Microsoft.AspNetCore.Mvc.Testing`, `Microsoft.Extensions.TimeProvider.Testing`, ArchUnitNET, coverlet.collector |
+| Tests | xUnit v3, Shouldly, NSubstitute, Testcontainers.MsSql, Respawn, `Microsoft.AspNetCore.Mvc.Testing`, `Microsoft.Extensions.TimeProvider.Testing`, ArchUnitNET, coverlet.MTP |
 
 Avoid: MediatR, AutoMapper, FluentAssertions v8+, Moq, Swashbuckle, Newtonsoft.Json, and EF InMemory. FluentAssertions v8+ is commercially licensed. Moq has a history of a privacy incident. The others are replaced by built-in features or by choices made above.
 
@@ -715,7 +726,7 @@ Avoid: MediatR, AutoMapper, FluentAssertions v8+, Moq, Swashbuckle, Newtonsoft.J
 | Purpose | Library |
 |---|---|
 | Build/dev | Vite, TypeScript (`strict`) |
-| UI | React, Tailwind CSS v4, shadcn/ui (Radix), `lucide-react` icons |
+| UI | React, Tailwind CSS v4, shadcn/ui (Radix base: `shadcn init --base radix`), `lucide-react` icons; `cn()` from clsx + tailwind-merge |
 | Routing | React Router v7 |
 | Server state | TanStack Query v5 |
 | API client | Orval (generated) |
@@ -744,7 +755,7 @@ Avoid: MediatR, AutoMapper, FluentAssertions v8+, Moq, Swashbuckle, Newtonsoft.J
 
 **Frontend:**
 
-- ESLint flat config: `typescript-eslint` (strict-type-checked), `eslint-plugin-react-hooks`, `eslint-plugin-jsx-a11y`, `eslint-plugin-i18next`, and import boundary rules.
+- ESLint 9 flat config: `typescript-eslint` (strict-type-checked), `eslint-plugin-react-hooks`, `eslint-plugin-jsx-a11y`, `eslint-plugin-i18next`, and import boundary rules. ESLint 10 waits until `eslint-plugin-jsx-a11y` supports it.
 - Prettier with `prettier-plugin-tailwindcss`.
 - `tsc --noEmit` in CI.
 

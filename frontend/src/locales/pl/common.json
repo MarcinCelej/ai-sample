@@ -1,0 +1,17 @@
+{
+  "appName": "ClassBook",
+  "nav": {
+    "main": "Nawigacja główna",
+    "courses": "Kursy"
+  },
+  "pagination": {
+    "label": "Stronicowanie",
+    "previous": "Poprzednia strona",
+    "next": "Następna strona",
+    "pageOf": "Strona {{page}} z {{pageCount}}"
+  },
+  "errors": {
+    "generic": "Coś poszło nie tak. Spróbuj ponownie później.",
+    "retry": "Spróbuj ponownie"
+  }
+}
