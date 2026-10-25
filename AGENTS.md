@@ -16,6 +16,11 @@ ClassBook (working name) lets an organization publish courses and classes and le
 1. **English only.** All repository content – code, comments, docs, specs, issues, PRs, commit messages – is in English. (The user-facing UI text is Polish via localization resources.)
 2. **Feature branches.** Work on a feature branch, never directly on `main`. If on `main`, create a branch first.
 3. **No commit, push or merge without explicit human approval.** Ask first, every time. Approval for one commit does not carry over to the next.
+4. **Everything is linked to a GitHub issue.** No work without an issue – if there is none, create it first (`gh issue create`).
+   - Branch: `<type>/<issue>-<slug>`, e.g. `feat/12-waiting-list`, `fix/31-mt940-import`. Types: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`.
+   - Commit: every commit subject starts with the issue reference: `[#12] Add waiting list promotion`.
+   - Pull request: title starts with `[#12]`, body contains `Closes #12`. PRs are merged with a merge commit (no squash, no rebase), so every commit stays in history.
+5. **Meaningful commits.** Each commit is one logical step with a clear subject and a body explaining what and why. Before opening or updating a PR, clean up the branch history (squash "wip", "fix lint", "try again" commits into the step they belong to). Rewriting history is allowed only on your own feature branch, never on `main`.
 
 ## The `.ai` folder
 
@@ -64,3 +69,4 @@ Before finishing any task, confirm:
 - [ ] New lessons are recorded in `.ai/lessons/` and indexed in `.ai/lessons.md`.
 - [ ] All content is in English and file names follow `YYYY-MM-DD-slug.md`.
 - [ ] Work is on a feature branch, and nothing was committed, pushed or merged without explicit approval.
+- [ ] Branch, every commit and the PR reference the GitHub issue (`[#N]`, `Closes #N`).
