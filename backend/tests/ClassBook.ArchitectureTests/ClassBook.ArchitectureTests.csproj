@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TngTech.ArchUnitNET.xUnitV3" />
+    <PackageReference Include="coverlet.MTP" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="xunit.v3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ClassBook.Shared\ClassBook.Shared.csproj" />
+    <ProjectReference Include="..\..\src\Modules\ClassBook.Modules.Courses\ClassBook.Modules.Courses.csproj" />
+    <ProjectReference Include="..\..\src\Modules\ClassBook.Modules.Enrollments\ClassBook.Modules.Enrollments.csproj" />
+    <ProjectReference Include="..\..\src\Modules\ClassBook.Modules.Families\ClassBook.Modules.Families.csproj" />
+    <ProjectReference Include="..\..\src\Modules\ClassBook.Modules.Identity\ClassBook.Modules.Identity.csproj" />
+    <ProjectReference Include="..\..\src\Modules\ClassBook.Modules.Payments\ClassBook.Modules.Payments.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Shouldly" />
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

@@ -10,4 +10,9 @@
     <Project Path="src/Modules/ClassBook.Modules.Identity/ClassBook.Modules.Identity.csproj" />
     <Project Path="src/Modules/ClassBook.Modules.Payments/ClassBook.Modules.Payments.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ClassBook.ArchitectureTests/ClassBook.ArchitectureTests.csproj" />
+    <Project Path="tests/ClassBook.IntegrationTests/ClassBook.IntegrationTests.csproj" />
+    <Project Path="tests/ClassBook.UnitTests/ClassBook.UnitTests.csproj" />
+  </Folder>
 </Solution>

@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace ClassBook.Shared.Domain;
 
 /// <summary>An amount in PLN, always rounded to 2 decimals (banker's rounding).</summary>
@@ -21,5 +23,6 @@ public readonly record struct Money
 
     public static Money Subtract(Money a, Money b) => a - b;
 
-    public override string ToString() => $"{Amount:0.00} {Currency}";
+    /// <summary>Culture-invariant text for logs and debugging; user-facing formatting happens in the frontend.</summary>
+    public override string ToString() => string.Create(CultureInfo.InvariantCulture, $"{Amount:0.00} {Currency}");
 }
